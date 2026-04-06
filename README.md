@@ -221,7 +221,7 @@ The project includes **Spring Boot Actuator** for monitoring and managing the ap
 - Actuator is enabled by default in all profiles.
 - Sensitive endpoints are secured and require authentication in production.
 - To customize endpoints, modify `application.properties`:
-  ```yaml
+  
   management.endpoints.web.exposure.include= health, metrics, loggers, info
   management.endpoint.health.show-details= always
 
@@ -237,7 +237,38 @@ The project includes **OpenAPI Documentation** for API testing and exploration u
 #### Configuration:
 - OpenAPI is enabled in the `dev` profile for testing and development.
 
-## Conclusion
 
+
+## Curl Commands for Testing
+
+### ✅ Initiate a Payment
+
+```bash
+curl -X POST http://127.0.0.1:8085/api/v1/payments \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer client-a-token" \
+  -d '{
+    "idempotencyKey": "unique-key-123",
+    "amount": 100.00,
+    "currency": "USD",
+    "description": "Payment for order #12345"
+  }'
+  ## Expected Response: 202 Accepted
+```
+
+
+
+### ✅ Get Payment Details by Tracking ID
+```bash
+curl -X GET http://127.0.0.1:8085/api/v1/payments/11843122-c4c5-4106-9a90-fac3a3ac0d7b \
+  -H "Authorization: Bearer client-a-token" \
+  -H "Accept: application/json"
+# Expected Response: 200 OK with payment details in JSON format
+```
+
+
+
+### Conclusion
 This project demonstrates a modular, testable approach to payment processing using Spring Boot.  
 While simplified, the architecture reflects real-world payment system concerns such as orchestration, state management, and failure handling.
+
