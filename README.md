@@ -13,13 +13,13 @@ The project is a technical assessment deliverable. It must demonstrate:
 
 ---
 
-## Coding Conventions (MUST follow)
+## Coding Conventions 
 
 ### General Style
-- **Java 21** — use modern language features (records for simple data, pattern matching, switch expressions, text blocks where appropriate)
-- **Lombok** — use `@Data`, `@Getter`, `@Setter`, `@NoArgsConstructor`, `@AllArgsConstructor`, `@Builder`, `@Slf4j` for entities and DTOs
+- **Java 21** — used modern language features (records for simple data, pattern matching, switch expressions, text blocks where appropriate)
+- **Lombok** — used `@Data`, `@Getter`, `@Setter`, `@NoArgsConstructor`, `@AllArgsConstructor`, `@Builder`, `@Slf4j` for entities and DTOs
 - **Constructor injection** via `@AllArgsConstructor` on services/controllers (no `@Autowired` on fields)
-- **Concise methods** — keep methods short; extract filters into small private methods
+- **Concise methods** — kept methods short; extract filters into small private methods
 - **Filter + forEach style** for classifier/comparison logic (user preference)
 
 ### Package Structure
@@ -46,34 +46,34 @@ com.payment/
 - Controller paths: `/api/v1/{resource}`
 
 ### Entity Conventions
-- Use `@PrePersist`/`@PreUpdate` for timestamps
-- Use `@Version` for optimistic locking on mutable entities
-- Use `@Builder.Default` for collection defaults
-- Use `@EntityGraph` on repository methods to avoid N+1
+- Used `@PrePersist`/`@PreUpdate` for timestamps
+- Used `@Version` for optimistic locking on mutable entities
+- Used `@Builder.Default` for collection defaults
+- Usde `@EntityGraph` on repository methods to avoid N+1
 
 ### DTO Conventions
-- Use Bean Validation annotations: `@NotBlank`, `@NotNull`, `@DecimalMin`, `@Size`, etc.
+- Used Bean Validation annotations: `@NotBlank`, `@NotNull`, `@DecimalMin`, `@Size`, etc.
 - DTOs are POJOs with Lombok — no business logic
-- Use `@Builder` on response DTOs
+- Used `@Builder` on response DTOs
 
 ### Service Conventions
 - `@Transactional` on write methods
 - `@Transactional(readOnly = true)` on read methods
-- Use `@Slf4j` for logging
-- Mask sensitive data using `MaskingUtil` before logging
+- Used `@Slf4j` for logging
+- Masked sensitive data using `MaskingUtil` before logging
 
 ### Controller Conventions
-- Use `@Valid @RequestBody` for input validation
-- Extract client ID from `Authentication.getName()`
-- Return `202 Accepted` for async ingestion, `200` for reads, `204` for deletes
-- Use OpenAPI `@Operation` and `@Tag` annotations
-- Clamp page size to prevent unbounded queries
+- Used `@Valid @RequestBody` for input validation
+- Extracted client ID from `Authentication.getName()`
+- Returned `202 Accepted` for async ingestion, `200` for reads, `204` for deletes
+- Used OpenAPI `@Operation` and `@Tag` annotations
+- Added page size to prevent unbounded queries
 
 ### Exception Handling
 - Custom runtime exceptions for domain errors
 - `@RestControllerAdvice` with `GlobalExceptionHandler`
 - Consistent `ErrorResponse` with timestamp, status, error, message, path
-- Never leak stack traces or internal details in error responses
+
 
 ### Mapper Conventions
 - `@Component` Spring beans (not MapStruct)
@@ -87,11 +87,11 @@ com.payment/
 ## Architecture Rules
 
 ### Security
-1. All `/api/**` endpoints require authentication
+1. All `/api/**` endpoints are required authentication
 2. Client ID is extracted from authentication principal (JWT `sub` claim or dev token mapping)
 3. Every payment query filters by `clientId` — no cross-tenant access
 4. Dev profile supports multiple test tokens: `client-a-token` → `client-a`, `client-b-token` → `client-b`
-5. Production uses OAuth2 Resource Server with JWT validation
+
 
 ### Event-Driven Processing
 1. Payment ingestion is synchronous: validate → save → publish event → return 202
@@ -114,40 +114,15 @@ INITIATED → FRAUD_CHECK_PENDING → FRAUD_CHECK_PASSED → PROCESSING → COMP
 ---
 
 ## Key Design Decisions to Defend
-
-When extending or reviewing this code, keep these trade-offs in mind:
-
 1. **Spring ApplicationEvent vs Kafka**: Chose in-process events for simplicity. In production, use a durable broker with retry/DLQ.
-2. **H2 vs PostgreSQL**: In-memory H2 for zero-setup demo. Schema is SQL-standard and portable.
-3. **Manual mappers vs MapStruct**: Manual for transparency and fewer build dependencies.
+2. **H2 vs PostgreSQL**: Chose In-memory H2 for zero-setup demo. Schema is SQL-standard and portable.
+3. **Manual mappers vs MapStruct**: Chose  manual for transparency and fewer build dependencies.
 4. **Thread.sleep in BankSimulator**: Simulates real network latency. In production, this would be an HTTP client call.
-5. **Random fraud/bank outcomes**: Demonstrates resilience. Production would use real ML models and bank APIs.
+5. **Random fraud/bank outcomes**: Demonstrated resilience. Production would use real ML models and bank APIs.
 
 ---
 
-## How to Extend
 
-### Adding a new payment state
-1. Add value to `PaymentStatus` enum
-2. Update `PaymentProcessingService` pipeline logic
-3. Update state diagram in README and ARCHITECTURE docs
-
-### Adding a new API endpoint
-1. Add DTO (request/response) in `dto/`
-2. Add service method in `PaymentService`
-3. Add controller method in `PaymentController`
-4. Add tests (unit + integration)
-
-### Adding a new tenant
-1. Insert into `clients` table (or add to `data.sql`)
-2. If using dev profile, add token mapping in `SecurityConfig.DEV_TOKENS`
-
-### Replacing fraud service with external call
-1. Create a REST client (WebClient/RestTemplate) in `FraudAssessmentService`
-2. Keep the same `FraudCheckResult` return type
-3. Add circuit breaker (Resilience4j) for fault tolerance
-
----
 
 ## Build & Run Commands
 
