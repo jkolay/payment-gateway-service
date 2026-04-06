@@ -1,5 +1,20 @@
 # Payment Gateway Service
 
+A Spring Boot–based payment gateway service that demonstrates a clean, extensible architecture for processing payments with fraud assessment and bank integration.
+
+This project is designed as a **reference implementation**, focusing on service orchestration, state management, and testability rather than real payment provider integration.
+
+
+## Overview
+
+The Payment Gateway Service processes customer payments by orchestrating multiple bounded services:
+
+- Payment lifecycle management
+- Fraud risk assessment
+- Bank authorization simulation
+
+Each concern is isolated behind a clear service interface to support testability, modularity, and future extensibility.
+
 ## Project Context
 
 This is a **Secure Event-Driven Payment Gateway** built with Spring Boot 3.3.x / Java 21. It follows the same layered architecture, coding conventions, and testing patterns as the companion Recipe Management Service project.
@@ -84,7 +99,38 @@ com.payment/
 
 ---
 
-## Architecture Rules
+
+## Architecture
+
+The application follows a layered architecture with a dedicated orchestration layer.
+
+Core components:
+
+- **PaymentProcessingService**  
+  Coordinates the end‑to‑end payment flow.
+
+- **PaymentService**  
+  Manages payment persistence and state transitions.
+
+- **FraudAssessmentService**  
+  Performs fraud checks based on payment attributes.
+
+- **BankSimulatorService**  
+  Abstracts external bank authorization.
+
+The architecture deliberately avoids tight coupling between services to allow independent evolution of fraud rules, bank integrations, and persistence strategies.
+
+
+## Payment Lifecycle
+
+A payment progresses through a defined set of states:
+
+1. INITIATED
+2. FRAUD_CHECK_PASSED / FRAUD_CHECK_FAILED
+3. COMPLETED or FAILED
+
+All state transitions are controlled via the `PaymentService` to ensure consistency and auditability.
+
 
 ### Security
 1. All `/api/**` endpoints are required authentication
@@ -190,3 +236,8 @@ The project includes **OpenAPI Documentation** for API testing and exploration u
 
 #### Configuration:
 - OpenAPI is enabled in the `dev` profile for testing and development.
+
+## Conclusion
+
+This project demonstrates a modular, testable approach to payment processing using Spring Boot.  
+While simplified, the architecture reflects real-world payment system concerns such as orchestration, state management, and failure handling.
