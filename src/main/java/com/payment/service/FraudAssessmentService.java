@@ -17,7 +17,7 @@ import java.util.Random;
 @Slf4j
 public class FraudAssessmentService {
 
-    private static final BigDecimal HIGH_AMOUNT_THRESHOLD = new BigDecimal("10000.00");
+    private static final BigDecimal HIGH_AMOUNT_THRESHOLD = new BigDecimal("20000.00");
     private static final double RANDOM_FRAUD_PROBABILITY = 0.05;
     private final Random random = new Random();
 
